@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="mjpeg">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/libs/mjpeg.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
