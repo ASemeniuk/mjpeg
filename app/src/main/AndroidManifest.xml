@@ -21,6 +21,11 @@
             </intent-filter>
         </activity>
 
+        <provider
+            android:name=".DataProvider"
+            android:authorities="org.alexsem.mjpeg"
+            android:exported="false"/>
+
     </application>
 
 </manifest>
