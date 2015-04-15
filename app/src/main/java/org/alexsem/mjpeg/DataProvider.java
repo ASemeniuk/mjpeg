@@ -24,6 +24,7 @@ public class DataProvider extends ContentProvider {
         public static final String ID = "_id";
         public static final String NAME = "name";
         public static final String HOST = "host";
+        public static final String MODE = "mode";
         public static final String ENABLED = "enabled";
         public static final String ORDER = "ord";
 
