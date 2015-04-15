@@ -17,6 +17,7 @@ public class ConfigActivity extends Activity {
     private GridView mGrid;
     private CameraConfigAdapter mAdapter;
     private int mCameraCount = 9;
+    private int mOneDp = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +36,7 @@ public class ConfigActivity extends Activity {
             }
         });
         mGrid.setAdapter(mAdapter);
+        mOneDp = getResources().getDisplayMetrics().densityDpi / 160;
 
         getLoaderManager().initLoader(0, null, mLoaderCallbacks);
     }
@@ -60,7 +62,7 @@ public class ConfigActivity extends Activity {
 
             int colCount = mCameraCount > 4 ? 3 : mCameraCount > 1 ? 2 : 1;
             int rowCount = mCameraCount / colCount;
-            mAdapter.setCellSize(mGrid.getWidth() / colCount, mGrid.getHeight() / rowCount);
+            mAdapter.setCellSize((mGrid.getWidth() - mOneDp * (colCount - 1)) / colCount, (mGrid.getHeight() - mOneDp * (rowCount - 1)) / rowCount);
             mGrid.setNumColumns(colCount);
             mAdapter.swapCursor(data);
         }
