@@ -1,53 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:padding="1dp">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="1dp">
 
-	<com.camera.simplemjpeg.MjpegView
-		android:id="@+id/mjpeg_player"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent" />
+    <com.camera.simplemjpeg.MjpegView
+        android:id="@+id/mjpeg_player"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
-	<TextView
-		android:id="@+id/mjpeg_title"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:textAppearance="?android:attr/textAppearanceSmall"
-		android:layout_marginLeft="8dp" 
-		android:layout_marginTop="4dp" />
+    <TextView
+        android:id="@+id/mjpeg_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="4dp"/>
 
-	<ProgressBar
-		android:id="@+id/mjpeg_progress"
-		style="?android:attr/progressBarStyleLarge"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="center"
-		android:visibility="gone" />
+    <ProgressBar
+        android:id="@+id/mjpeg_progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"/>
 
-	<LinearLayout
-		android:id="@+id/mjpeg_error"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="center"
-		android:gravity="center"
-		android:orientation="vertical"
-		android:visibility="gone">
-
-		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:textAppearance="?android:attr/textAppearanceMedium"
-			android:hint="@string/mjpeg_error" />
-
-		<Button
-			android:id="@+id/mjpeg_retry"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="8dp"
-			android:text="@string/mjpeg_retry" />
-
-	</LinearLayout>
+    <Button
+        android:id="@+id/mjpeg_retry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/mjpeg_retry"
+        android:visibility="gone"/>
 
 </FrameLayout>

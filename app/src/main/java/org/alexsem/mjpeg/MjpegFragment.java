@@ -29,7 +29,7 @@ public class MjpegFragment extends Fragment {
     private MjpegView mPlayer;
     private TextView mTitle;
     private View mProgress;
-    private View mError;
+    private View mRetry;
     private boolean isSuspended = false;
 
     /**
@@ -63,8 +63,8 @@ public class MjpegFragment extends Fragment {
         });
         mTitle = (TextView) view.findViewById(R.id.mjpeg_title);
         mProgress = view.findViewById(R.id.mjpeg_progress);
-        mError = view.findViewById(R.id.mjpeg_error);
-        view.findViewById(R.id.mjpeg_retry).setOnClickListener(new View.OnClickListener() {
+        mRetry = view.findViewById(R.id.mjpeg_retry);
+        mRetry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 load();
@@ -111,7 +111,7 @@ public class MjpegFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             mProgress.setVisibility(View.VISIBLE);
-            mError.setVisibility(View.GONE);
+            mRetry.setVisibility(View.GONE);
             if (mPlayer.isStreaming()) {
                 mPlayer.stopPlayback();
             }
@@ -144,10 +144,10 @@ public class MjpegFragment extends Fragment {
             mProgress.setVisibility(View.GONE);
             if (result != null) {
                 result.setSkip(1);
-                mError.setVisibility(View.GONE);
+                mRetry.setVisibility(View.GONE);
                 mPlayer.setSource(result);
             } else {
-                mError.setVisibility(View.VISIBLE);
+                mRetry.setVisibility(View.VISIBLE);
             }
         }
     }

@@ -11,7 +11,6 @@
     <string name="camera_http">http://</string>
     <string name="camera_8080">:8080</string>
 
-    <string name="mjpeg_error">Unable to load data</string>
     <string name="mjpeg_retry">Retry</string>
 
     <string name="dialog_save">Save</string>
