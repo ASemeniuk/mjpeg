@@ -9,9 +9,9 @@
         android:id="@+id/camera_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="4dp"/>
+        android:layout_marginTop="4dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
 
     <TextView
         android:id="@+id/camera_order"
@@ -19,7 +19,21 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textStyle="bold"
-        android:textSize="44sp"/>
+        android:textSize="44sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/camera_host"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:gravity="right"
+        android:maxLines="1"
+        android:scrollHorizontally="true"
+        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
 
 </FrameLayout>

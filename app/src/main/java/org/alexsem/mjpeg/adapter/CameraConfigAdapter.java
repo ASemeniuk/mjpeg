@@ -43,9 +43,13 @@ public class CameraConfigAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         ViewHolder holder = (ViewHolder) view.getTag();
-        holder.getName().setText(cursor.getString(cursor.getColumnIndex(DataProvider.Camera.NAME)));
+        boolean enabled = cursor.getInt(cursor.getColumnIndex(DataProvider.Camera.ENABLED)) > 0;
         holder.getOrder().setHint(String.valueOf(cursor.getInt(cursor.getColumnIndex(DataProvider.Camera.ORDER))));
-        view.setActivated(cursor.getInt(cursor.getColumnIndex(DataProvider.Camera.ENABLED)) > 0);
+        holder.getName().setText(cursor.getString(cursor.getColumnIndex(DataProvider.Camera.NAME)));
+        holder.getName().setVisibility(enabled ? View.VISIBLE : View.GONE);
+        holder.getHost().setHint(cursor.getString(cursor.getColumnIndex(DataProvider.Camera.HOST)));
+        holder.getHost().setVisibility(enabled ? View.VISIBLE : View.GONE);
+        view.setActivated(enabled);
         if (mLayoutParams != null) {
             view.setLayoutParams(mLayoutParams);
         }
@@ -70,6 +74,7 @@ public class CameraConfigAdapter extends CursorAdapter {
         private View base;
         private TextView name = null;
         private TextView order = null;
+        private TextView host = null;
 
         /**
          * Constructor
@@ -91,6 +96,13 @@ public class CameraConfigAdapter extends CursorAdapter {
                 name = (TextView) base.findViewById(R.id.camera_title);
             }
             return (name);
+        }
+
+        public TextView getHost() {
+            if (host == null) {
+                host = (TextView) base.findViewById(R.id.camera_host);
+            }
+            return (host);
         }
 
     }
