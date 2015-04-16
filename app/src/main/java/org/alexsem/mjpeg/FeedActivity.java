@@ -60,7 +60,7 @@ public class FeedActivity extends Activity {
 					cell.setId(generateViewId());
 					cell.setLayoutParams(params);
 					row.addView(cell);
-					if (cursor.moveToNext() && cursor.getInt(cursor.getColumnIndex(DataProvider.Camera.ENABLED)) > 0 && Math.random() > 0.3f) {
+					if (cursor.moveToNext() && cursor.getInt(cursor.getColumnIndex(DataProvider.Camera.ENABLED)) > 0) {
 						String name = cursor.getString(cursor.getColumnIndex(DataProvider.Camera.NAME));
 						String url = String.format("http://%s:8080/videofeed", cursor.getString(cursor.getColumnIndex(DataProvider.Camera.HOST)));
 						int mode = cursor.getInt(cursor.getColumnIndex(DataProvider.Camera.MODE));
