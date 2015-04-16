@@ -7,7 +7,7 @@
     android:background="@android:color/darker_gray"
     android:padding="1dp">
 
-    <GridView
+    <org.askerov.dynamicgrid.DynamicGridView
         android:id="@+id/camera_grid"
         android:scaleType="centerInside"
         android:layout_width="match_parent"
@@ -15,8 +15,8 @@
         android:numColumns="3"
         android:verticalSpacing="1dp"
         android:isScrollContainer="false"
+        android:drawSelectorOnTop="true"
         android:scrollbars="none"
-        android:listSelector="@android:color/transparent"
         android:fadingEdgeLength="0dp"
         android:horizontalSpacing="1dp"
         android:stretchMode="columnWidth"

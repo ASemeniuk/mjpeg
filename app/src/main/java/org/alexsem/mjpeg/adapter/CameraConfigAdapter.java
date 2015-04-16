@@ -8,15 +8,17 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.alexsem.mjpeg.R;
 import org.alexsem.mjpeg.database.DataProvider;
+import org.askerov.dynamicgrid.DynamicGridAdapterInterface;
 
 /**
  * Adapter used to represent list of news items
  * @author Semeniuk A.D.
  */
-public class CameraConfigAdapter extends CursorAdapter {
+public class CameraConfigAdapter extends CursorAdapter implements DynamicGridAdapterInterface {
 
     private LayoutInflater mInflater;
     private AbsListView.LayoutParams mLayoutParams;
@@ -49,7 +51,7 @@ public class CameraConfigAdapter extends CursorAdapter {
         holder.getName().setVisibility(enabled ? View.VISIBLE : View.GONE);
         holder.getHost().setHint(cursor.getString(cursor.getColumnIndex(DataProvider.Camera.HOST)));
         holder.getHost().setVisibility(enabled ? View.VISIBLE : View.GONE);
-        view.setActivated(enabled);
+        view.setEnabled(enabled);
         if (mLayoutParams != null) {
             view.setLayoutParams(mLayoutParams);
         }
@@ -64,7 +66,24 @@ public class CameraConfigAdapter extends CursorAdapter {
         return Math.min(mCount, super.getCount());
     }
 
-    //--------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
+
+    @Override
+    public void reorderItems(int originalPosition, int newPosition) {
+    }
+
+    @Override
+    public int getColumnCount() {
+        return mCount > 4 ? 3 : mCount > 1 ? 2 : 1;
+    }
+
+    @Override
+    public boolean canReorder(int position) {
+        return false;
+    }
+
+
+    //----------------------------------------------------------------------------------------------
 
     /**
      * Class used for temporary data storage

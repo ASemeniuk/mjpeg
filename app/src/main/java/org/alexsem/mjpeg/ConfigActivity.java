@@ -4,29 +4,29 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.LoaderManager;
+import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.GridView;
-import android.widget.SpinnerAdapter;
 
 import org.alexsem.mjpeg.adapter.CameraConfigAdapter;
 import org.alexsem.mjpeg.database.DataProvider;
+import org.askerov.dynamicgrid.DynamicGridView;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class ConfigActivity extends Activity {
 
-    private GridView mGrid;
+    private DynamicGridView mGrid;
     private CameraConfigAdapter mAdapter;
     private int mCameraCount = 1;
     private int mOneDp = 0;
@@ -57,12 +57,37 @@ public class ConfigActivity extends Activity {
         bar.setSelectedNavigationItem(CAMERA_COUNT.indexOf(String.valueOf(mCameraCount)));
 
         mAdapter = new CameraConfigAdapter(this, null);
-        mGrid = (GridView) findViewById(R.id.camera_grid);
+        mGrid = (DynamicGridView) findViewById(R.id.camera_grid);
         mGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 DialogFragment dialog = CameraDialogFragment.newInstance(id);
                 dialog.show(getFragmentManager(), "dialog");
+            }
+        });
+        mGrid.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                mGrid.startEditMode(position);
+                return true;
+            }
+        });
+        mGrid.setOnDropListener(new DynamicGridView.OnDropListener() {
+            @Override
+            public void onActionDrop(int oldPosition, int newPosition) {
+                if (oldPosition != newPosition && oldPosition > -1 && newPosition > -1) {
+                    long oldId = mAdapter.getItemId(oldPosition);
+                    long newId = mAdapter.getItemId(newPosition);
+                    Uri uri = Uri.withAppendedPath(DataProvider.Camera.CONTENT_URI, String.valueOf(oldId));
+                    ContentValues values = new ContentValues();
+                    values.put(DataProvider.Camera.ORDER, newPosition + 1);
+                    getContentResolver().update(uri, values, null, null);
+                    uri = Uri.withAppendedPath(DataProvider.Camera.CONTENT_URI, String.valueOf(newId));
+                    values.put(DataProvider.Camera.ORDER, oldPosition + 1);
+                    getContentResolver().update(uri, values, null, null);
+                    getLoaderManager().restartLoader(0, null, mLoaderCallbacks);
+                }
+                mGrid.stopEditMode();
             }
         });
         mGrid.setAdapter(mAdapter);
