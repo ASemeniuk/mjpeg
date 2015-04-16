@@ -19,7 +19,7 @@ public class FeedActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		generateLayout(9);
+		generateLayout(getSharedPreferences(getPackageName(), MODE_PRIVATE).getInt("cameras", 4));
 	}
 
 	//----------------------------------------------------------------------------------------------

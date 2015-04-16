@@ -3,6 +3,8 @@
 
     <string name="action_play">Start playback</string>
 
+    <string name="config_cameras">Cameras:</string>
+
     <string name="camera_enabled">Enabled:</string>
     <string name="camera_name">Name:</string>
     <string name="camera_address">Address:</string>

@@ -1,5 +1,6 @@
 package org.alexsem.mjpeg;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.LoaderManager;
@@ -12,22 +13,48 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.SpinnerAdapter;
 
 import org.alexsem.mjpeg.adapter.CameraConfigAdapter;
 import org.alexsem.mjpeg.database.DataProvider;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ConfigActivity extends Activity {
 
     private GridView mGrid;
     private CameraConfigAdapter mAdapter;
-    private int mCameraCount = 9;
+    private int mCameraCount = 1;
     private int mOneDp = 0;
+
+    private final List<String> CAMERA_COUNT = Arrays.asList("1", "2", "4", "9");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_config);
+
+        mCameraCount = getSharedPreferences(getPackageName(), MODE_PRIVATE).getInt("cameras", 4);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, CAMERA_COUNT);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ActionBar bar = getActionBar();
+        bar.setTitle(R.string.config_cameras);
+        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        bar.setListNavigationCallbacks(adapter, new ActionBar.OnNavigationListener() {
+            @Override
+            public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+                mCameraCount = Integer.valueOf(CAMERA_COUNT.get(itemPosition));
+                getSharedPreferences(getPackageName(), MODE_PRIVATE).edit().putInt("cameras", mCameraCount).commit();
+                getLoaderManager().restartLoader(0, null, mLoaderCallbacks);
+                return true;
+            }
+        });
+        bar.setSelectedNavigationItem(CAMERA_COUNT.indexOf(String.valueOf(mCameraCount)));
 
         mAdapter = new CameraConfigAdapter(this, null);
         mGrid = (GridView) findViewById(R.id.camera_grid);
