@@ -77,11 +77,13 @@ public class MjpegFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mPlayer.setDisplayMode(getArguments().getInt("mode"));
+        mPlayer.setDisplayMode(MjpegView.SIZE_KEEP_ASPECT);
         load();
     }
 
     private void load() {
         mPlayer.setResolution(640, 480); //TODO
+        mPlayer.setTag(getArguments().getString("name")); //TODO
         mTitle.setHint(getArguments().getString("name"));
         isSuspended = false;
         new DataLoadingTask().execute(getArguments().getString("url"));

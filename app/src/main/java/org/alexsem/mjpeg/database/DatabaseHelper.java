@@ -16,7 +16,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE Camera (_id INTEGER PRIMARY KEY, name TEXT, host TEXT, mode INTEGER, enabled INTEGER, ord INTEGER);");
         for (int i = 1; i <= 9; i++) {
-            db.execSQL(String.format("INSERT INTO Camera (name, host, mode, enabled, ord) VALUES ('Camera %1$d', 'unknown', %2$d, 1, %1$d)", i, MjpegView.SIZE_STANDARD));
+            db.execSQL(String.format("INSERT INTO Camera (name, host, mode, enabled, ord) VALUES ('Camera %1$d', 'unknown', %2$d, 1, %1$d)", i, MjpegView.SIZE_KEEP_ASPECT));
         }
     }
 
