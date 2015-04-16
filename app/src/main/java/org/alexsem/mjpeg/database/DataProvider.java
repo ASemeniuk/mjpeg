@@ -1,4 +1,4 @@
-package org.alexsem.mjpeg;
+package org.alexsem.mjpeg.database;
 
 import android.content.ContentProvider;
 import android.content.ContentProviderOperation;

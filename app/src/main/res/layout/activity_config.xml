@@ -16,6 +16,7 @@
         android:verticalSpacing="1dp"
         android:isScrollContainer="false"
         android:scrollbars="none"
+        android:listSelector="@android:color/transparent"
         android:fadingEdgeLength="0dp"
         android:horizontalSpacing="1dp"
         android:stretchMode="columnWidth"

@@ -10,9 +10,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import com.camera.simplemjpeg.MjpegView;
-
-import org.alexsem.mjpeg.R;
+import org.alexsem.mjpeg.database.DataProvider;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

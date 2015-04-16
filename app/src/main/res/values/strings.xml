@@ -1,6 +1,16 @@
 <resources>
     <string name="app_name">MjpegTranslator</string>
 
+    <string name="camera_enabled">Enabled:</string>
+    <string name="camera_name">Name:</string>
+    <string name="camera_address">Address:</string>
+    <string name="camera_http">http://</string>
+    <string name="camera_8080">:8080</string>
+
+
     <string name="mjpeg_error">Unable to load data</string>
     <string name="mjpeg_retry">Retry</string>
+
+    <string name="dialog_save">Save</string>
+    <string name="dialog_cancel">Cancel</string>
 </resources>

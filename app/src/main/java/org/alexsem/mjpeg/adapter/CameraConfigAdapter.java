@@ -2,15 +2,15 @@ package org.alexsem.mjpeg.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.CursorAdapter;
 import android.widget.TextView;
 
-import org.alexsem.mjpeg.DataProvider;
 import org.alexsem.mjpeg.R;
+import org.alexsem.mjpeg.database.DataProvider;
 
 /**
  * Adapter used to represent list of news items
@@ -27,7 +27,7 @@ public class CameraConfigAdapter extends CursorAdapter {
         this.mInflater = LayoutInflater.from(context);
     }
 
-    public void setCellSize(int cellWidth ,int cellHeight) {
+    public void setCellSize(int cellWidth, int cellHeight) {
         mLayoutParams = new AbsListView.LayoutParams(cellWidth, cellHeight);
         notifyDataSetChanged();
     }
@@ -45,6 +45,7 @@ public class CameraConfigAdapter extends CursorAdapter {
         ViewHolder holder = (ViewHolder) view.getTag();
         holder.getName().setText(cursor.getString(cursor.getColumnIndex(DataProvider.Camera.NAME)));
         holder.getOrder().setHint(String.valueOf(cursor.getInt(cursor.getColumnIndex(DataProvider.Camera.ORDER))));
+        view.setActivated(cursor.getInt(cursor.getColumnIndex(DataProvider.Camera.ENABLED)) > 0);
         if (mLayoutParams != null) {
             view.setLayoutParams(mLayoutParams);
         }
