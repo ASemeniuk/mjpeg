@@ -2,11 +2,11 @@
 <items version="2" >
 
     <item
-        jar="C:\Users\alexandr.semeniuk\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\22.0.0\support-annotations-22.0.0.jar"
+        jar="D:\git\mjpeg\app\build\intermediates\exploded-aar\com.android.support\support-v4\20.0.0\classes.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="685d0b2c590447e85284ed84712cb363ba04eff8">
-        <dex dex="D:\git\mjpeg\app\build\intermediates\pre-dexed\debug\support-annotations-22.0.0-666f20140136066e28b5bdca40e9a477d6032db4.jar" />
+        sha1="8694693636ab36910c8100ce527c258ff3ebece0">
+        <dex dex="D:\git\mjpeg\app\build\intermediates\pre-dexed\debug\classes-2df0425b93fbf67ee7cd4e91109c4f1988905d68.jar" />
     </item>
     <item
         jar="D:\git\mjpeg\app\libs\mjpeg.jar"
@@ -16,25 +16,25 @@
         <dex dex="D:\git\mjpeg\app\build\intermediates\pre-dexed\debug\mjpeg-5c2e2d9561bc4b810e2ff6e32af010a2d9b2f4b9.jar" />
     </item>
     <item
-        jar="D:\git\mjpeg\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.0.0\classes.jar"
+        jar="D:\git\mjpeg\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\20.0.0\classes.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="4e86306289ace4aa0cfec44a05ed2b410d36989d">
-        <dex dex="D:\git\mjpeg\app\build\intermediates\pre-dexed\debug\classes-c108e5e0997dd1f09c0029bd6c36369861631bc4.jar" />
+        sha1="f21927d22fe31889ecce94dd697a2e75b137e0ef">
+        <dex dex="D:\git\mjpeg\app\build\intermediates\pre-dexed\debug\classes-5bf90b8753f1f6d7c502ba2ffcd96349186e21b1.jar" />
     </item>
     <item
-        jar="D:\git\mjpeg\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\22.0.0\classes.jar"
+        jar="C:\Users\alexandr.semeniuk\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\20.0.0\support-annotations-20.0.0.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="d84409890828e07d344a3b9b1da545dba9897b51">
-        <dex dex="D:\git\mjpeg\app\build\intermediates\pre-dexed\debug\classes-61241e85ab6b45ab946580d34ab189b5ab7147dc.jar" />
+        sha1="9d9013e9ff35fc3756411e62873c363c70c638fa">
+        <dex dex="D:\git\mjpeg\app\build\intermediates\pre-dexed\debug\support-annotations-20.0.0-c375714f1e0f46d95bfcbbfc20ac3a37d6eaed58.jar" />
     </item>
     <item
-        jar="D:\git\mjpeg\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.0.0\libs\internal_impl-22.0.0.jar"
+        jar="D:\git\mjpeg\app\build\intermediates\exploded-aar\com.android.support\support-v4\20.0.0\libs\internal_impl-20.0.0.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="b5b92f469d515a13d778900f6d50c03d12f35504">
-        <dex dex="D:\git\mjpeg\app\build\intermediates\pre-dexed\debug\internal_impl-22.0.0-013fcfccfb76ae4341d8f8e84666a9e18f034e1f.jar" />
+        sha1="e40b3078e3fbd353c9f44da8df25a8fc0078209d">
+        <dex dex="D:\git\mjpeg\app\build\intermediates\pre-dexed\debug\internal_impl-20.0.0-8401834615645dc864410d67f715755a3e81f6e4.jar" />
     </item>
 
 </items>

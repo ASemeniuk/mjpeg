@@ -1,16 +1,16 @@
 package org.alexsem.mjpeg;
 
-import android.app.ActionBar;
-import android.app.Activity;
-import android.app.DialogFragment;
-import android.app.LoaderManager;
 import android.content.ContentValues;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,7 +24,7 @@ import org.askerov.dynamicgrid.DynamicGridView;
 import java.util.Arrays;
 import java.util.List;
 
-public class ConfigActivity extends Activity {
+public class ConfigActivity extends ActionBarActivity {
 
     private DynamicGridView mGrid;
     private CameraConfigAdapter mAdapter;
@@ -42,7 +42,7 @@ public class ConfigActivity extends Activity {
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, CAMERA_COUNT);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        ActionBar bar = getActionBar();
+        ActionBar bar = getSupportActionBar();
         bar.setTitle(R.string.config_cameras);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         bar.setListNavigationCallbacks(adapter, new ActionBar.OnNavigationListener() {
@@ -50,7 +50,7 @@ public class ConfigActivity extends Activity {
             public boolean onNavigationItemSelected(int itemPosition, long itemId) {
                 mCameraCount = Integer.valueOf(CAMERA_COUNT.get(itemPosition));
                 getSharedPreferences(getPackageName(), MODE_PRIVATE).edit().putInt("cameras", mCameraCount).commit();
-                getLoaderManager().restartLoader(0, null, mLoaderCallbacks);
+                getSupportLoaderManager().restartLoader(0, null, mLoaderCallbacks);
                 return true;
             }
         });
@@ -62,7 +62,7 @@ public class ConfigActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 DialogFragment dialog = CameraDialogFragment.newInstance(id);
-                dialog.show(getFragmentManager(), "dialog");
+                dialog.show(getSupportFragmentManager(), "dialog");
             }
         });
         mGrid.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -85,7 +85,7 @@ public class ConfigActivity extends Activity {
                     uri = Uri.withAppendedPath(DataProvider.Camera.CONTENT_URI, String.valueOf(newId));
                     values.put(DataProvider.Camera.ORDER, oldPosition + 1);
                     getContentResolver().update(uri, values, null, null);
-                    getLoaderManager().restartLoader(0, null, mLoaderCallbacks);
+                    getSupportLoaderManager().restartLoader(0, null, mLoaderCallbacks);
                 }
                 mGrid.stopEditMode();
             }
@@ -93,7 +93,7 @@ public class ConfigActivity extends Activity {
         mGrid.setAdapter(mAdapter);
         mOneDp = getResources().getDisplayMetrics().densityDpi / 160;
 
-        getLoaderManager().initLoader(0, null, mLoaderCallbacks);
+        getSupportLoaderManager().initLoader(0, null, mLoaderCallbacks);
     }
 
     @Override

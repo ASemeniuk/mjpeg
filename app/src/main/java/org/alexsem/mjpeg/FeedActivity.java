@@ -1,10 +1,10 @@
 package org.alexsem.mjpeg;
 
-import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -14,7 +14,7 @@ import org.alexsem.mjpeg.database.DataProvider;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class FeedActivity extends Activity {
+public class FeedActivity extends ActionBarActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +38,7 @@ public class FeedActivity extends Activity {
 		global.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 		setContentView(global);
 
-		FragmentManager fm = getFragmentManager();
+		FragmentManager fm = getSupportFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
 		int columns = cameraCount > 4 ? 3 : cameraCount > 1? 2 : 1;
 		LinearLayout row = null;
