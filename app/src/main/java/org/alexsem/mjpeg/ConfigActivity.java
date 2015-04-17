@@ -9,13 +9,21 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.MediaRouteActionProvider;
+import android.support.v7.media.MediaRouteSelector;
+import android.support.v7.media.MediaRouter;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
+
+import com.google.android.gms.cast.CastDevice;
+import com.google.android.gms.cast.CastMediaControlIntent;
 
 import org.alexsem.mjpeg.adapter.CameraConfigAdapter;
 import org.alexsem.mjpeg.database.DataProvider;
@@ -30,6 +38,11 @@ public class ConfigActivity extends ActionBarActivity {
     private CameraConfigAdapter mAdapter;
     private int mCameraCount = 1;
     private int mOneDp = 0;
+
+    MediaRouter mMediaRouter;
+    MediaRouteSelector mMediaRouteSelector;
+    MediaRouter.Callback mMediaRouterCallback;
+    CastDevice mCastDevice;
 
     private final List<String> CAMERA_COUNT = Arrays.asList("1", "2", "4", "9");
 
@@ -93,12 +106,50 @@ public class ConfigActivity extends ActionBarActivity {
         mGrid.setAdapter(mAdapter);
         mOneDp = getResources().getDisplayMetrics().densityDpi / 160;
 
+        mMediaRouter = MediaRouter.getInstance(this);
+        mMediaRouteSelector = new MediaRouteSelector.Builder()
+                .addControlCategory(CastMediaControlIntent.categoryForCast(getString(R.string.app_id)))
+                .build();
+
+        mMediaRouterCallback = new MediaRouter.Callback() {
+            @Override
+            public void onRouteSelected(MediaRouter router, MediaRouter.RouteInfo route) {
+                super.onRouteSelected(router, route);
+                mCastDevice = CastDevice.getFromBundle(route.getExtras());
+                Toast.makeText(getApplicationContext(), "Connected to " + route.getName(), Toast.LENGTH_LONG).show(); //TODO
+            }
+
+            @Override
+            public void onRouteUnselected(MediaRouter router, MediaRouter.RouteInfo route) {
+                super.onRouteUnselected(router, route);
+                mCastDevice = null;
+                Toast.makeText(getApplicationContext(), "Disconnected from " + route.getName(), Toast.LENGTH_LONG).show(); //TODO
+            }
+        };
+
         getSupportLoaderManager().initLoader(0, null, mLoaderCallbacks);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mMediaRouter.addCallback(mMediaRouteSelector, mMediaRouterCallback, MediaRouter.CALLBACK_FLAG_PERFORM_ACTIVE_SCAN);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (isFinishing()) {
+            mMediaRouter.removeCallback(mMediaRouterCallback);
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.config, menu);
+        MenuItem media_route_menu_item = menu.findItem(R.id.action_cast);
+        MediaRouteActionProvider provider = (MediaRouteActionProvider) MenuItemCompat.getActionProvider(media_route_menu_item);
+        provider.setRouteSelector(mMediaRouteSelector);
         return true;
     }
 

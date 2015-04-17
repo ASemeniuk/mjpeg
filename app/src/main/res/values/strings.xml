@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Mjpeg Translator</string>
+    <string name="app_id">ID</string>
 
     <string name="action_play">Start playback</string>
+    <string name="action_cast">Cast to device</string>
 
     <string name="config_cameras">Cameras:</string>
 

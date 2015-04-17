@@ -7,4 +7,9 @@
         android:title="@string/action_play"
         android:icon="@drawable/ic_action_play"
         app:showAsAction="always"/>
+    <item
+        android:id="@+id/action_cast"
+        android:title="@string/action_cast"
+        app:actionProviderClass="android.support.v7.app.MediaRouteActionProvider"
+        app:showAsAction="always"/>
 </menu>
