@@ -5,21 +5,9 @@
       <config />
     </shared>
   </component>
-  <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
-  </component>
   <component name="ChangeListManager">
     <list default="true" id="d80d7e65-7dbe-4468-a09d-cac6281faec9" name="Default" comment="">
-      <change type="DELETED" beforePath="D:\git\mjpeg\app\src\main\java\org\askerov\dynamicgrid\AbstractDynamicGridAdapter.java" afterPath="" />
-      <change type="DELETED" beforePath="D:\git\mjpeg\app\src\main\java\org\askerov\dynamicgrid\BaseDynamicGridAdapter.java" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/cache.properties.lock" afterPath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/cache.properties.lock" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/fileHashes.bin" afterPath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/fileHashes.bin" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/fileSnapshots.bin" afterPath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/fileSnapshots.bin" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/taskArtifacts.bin" afterPath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/taskArtifacts.bin" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/org/askerov/dynamicgrid/DynamicGridAdapterInterface.java" afterPath="$PROJECT_DIR$/app/src/main/java/org/askerov/dynamicgrid/DynamicGridAdapterInterface.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/camera/simplemjpeg/MjpegInputStream.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/camera/simplemjpeg/MjpegInputStream.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/camera/simplemjpeg/MjpegView.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/camera/simplemjpeg/MjpegView.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="MjpegTranslator.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -76,13 +64,13 @@
       <file leaf-file-name="MjpegView.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/camera/simplemjpeg/MjpegView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.4249548">
-              <caret line="301" column="57" selection-start-line="301" selection-start-column="57" selection-end-line="301" selection-end-column="57" />
+            <state vertical-scroll-proportion="-1.8155515">
+              <caret line="211" column="22" selection-start-line="211" selection-start-column="22" selection-end-line="211" selection-end-column="22" />
               <folding>
-                <element signature="e#2736#2737#0" expanded="true" />
-                <element signature="e#2763#2764#0" expanded="true" />
-                <element signature="e#5402#5403#0" expanded="true" />
-                <element signature="e#5436#5437#0" expanded="true" />
+                <element signature="e#2700#2701#0" expanded="true" />
+                <element signature="e#2727#2728#0" expanded="true" />
+                <element signature="e#5366#5367#0" expanded="true" />
+                <element signature="e#5400#5401#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -1003,8 +991,8 @@
         <option value="$PROJECT_DIR$/app/src/main/java/org/alexsem/mjpeg/ConfigActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/org/askerov/dynamicgrid/DynamicGridView.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/org/askerov/dynamicgrid/DynamicGridAdapterInterface.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/camera/simplemjpeg/MjpegView.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/camera/simplemjpeg/MjpegInputStream.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/camera/simplemjpeg/MjpegView.java" />
       </list>
     </option>
   </component>
@@ -1535,7 +1523,7 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32893288" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32995737" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32893288" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32893288" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -1943,13 +1931,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/camera/simplemjpeg/MjpegView.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.4249548">
-          <caret line="301" column="57" selection-start-line="301" selection-start-column="57" selection-end-line="301" selection-end-column="57" />
+        <state vertical-scroll-proportion="-1.8155515">
+          <caret line="211" column="22" selection-start-line="211" selection-start-column="22" selection-end-line="211" selection-end-column="22" />
           <folding>
-            <element signature="e#2736#2737#0" expanded="true" />
-            <element signature="e#2763#2764#0" expanded="true" />
-            <element signature="e#5402#5403#0" expanded="true" />
-            <element signature="e#5436#5437#0" expanded="true" />
+            <element signature="e#2700#2701#0" expanded="true" />
+            <element signature="e#2727#2728#0" expanded="true" />
+            <element signature="e#5366#5367#0" expanded="true" />
+            <element signature="e#5400#5401#0" expanded="true" />
           </folding>
         </state>
       </provider>

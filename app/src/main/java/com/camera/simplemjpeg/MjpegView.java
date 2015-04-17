@@ -28,7 +28,7 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
     public final static int SIZE_FULLSCREEN = 8;
     public final static int SIZE_KEEP_ASPECT = 16;
 
-    private final SurfaceHolder holder;
+    private SurfaceHolder holder;
 
     private MjpegViewThread thread;
     private MjpegInputStream mIn = null;
@@ -56,17 +56,16 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
 
     public MjpegView(Context context) {
         super(context);
-        holder = getHolder();
         init();
     }
 
     public MjpegView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        holder = getHolder();
         init();
     }
 
     private void init() {
+        holder = getHolder();
         holder.addCallback(this);
         thread = new MjpegViewThread(holder);
         setFocusable(true);
@@ -209,7 +208,7 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
      * Thread used for drawing on the surface
      */
     public class MjpegViewThread extends Thread {
-        private SurfaceHolder mSurfaceHolder;
+        private final SurfaceHolder mSurfaceHolder;
         private int frameCounter = 0;
         private long start;
         private String fps = "";
