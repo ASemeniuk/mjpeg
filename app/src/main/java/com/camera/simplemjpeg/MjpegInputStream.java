@@ -168,13 +168,15 @@ public class MjpegInputStream extends DataInputStream {
         readFully(frameData, 0, mContentLength);
 
         if (count++ % skip == 0) {
-            return BitmapFactory.decodeStream(new ByteArrayInputStream(frameData, 0, mContentLength));
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inMutable = true;
+            return BitmapFactory.decodeByteArray(frameData, 0, mContentLength, options);
         } else {
             return null;
         }
     }
 
-    public int readMjpegFrame(Bitmap bmp) throws IOException {
+    public int readMjpegFrame(Bitmap bmp, BitmapFactory.Options bmo) throws IOException {
         mark(FRAME_MAX_LENGTH);
         int headerLen;
         try {
@@ -191,7 +193,7 @@ public class MjpegInputStream extends DataInputStream {
         headerLenPrev = headerLen;
         readFully(header);
 
-        int ContentLengthNew = -1;
+        int ContentLengthNew;
         try {
             ContentLengthNew = parseContentLength(header);
         } catch (NumberFormatException nfe) {
@@ -227,7 +229,13 @@ public class MjpegInputStream extends DataInputStream {
         readFully(frameData, 0, mContentLength);
 
         if (count++ % skip == 0) {
-            return pixeltobmp(frameData, mContentLength, bmp);
+            try {
+                BitmapFactory.decodeByteArray(frameData, 0, mContentLength, bmo);
+            } catch (IllegalArgumentException ex) {
+                return -1;
+            }
+//            return pixeltobmp(frameData, mContentLength, bmp);
+            return 1;
         } else {
             return 0;
         }

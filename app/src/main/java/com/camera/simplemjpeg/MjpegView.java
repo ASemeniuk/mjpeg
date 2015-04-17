@@ -2,6 +2,7 @@ package com.camera.simplemjpeg;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -27,7 +28,7 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
     public final static int SIZE_FULLSCREEN = 8;
     public final static int SIZE_KEEP_ASPECT = 16;
 
-    SurfaceHolder holder;
+    private final SurfaceHolder holder;
 
     private MjpegViewThread thread;
     private MjpegInputStream mIn = null;
@@ -46,11 +47,167 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
     private boolean suspending = false;
 
     private Bitmap bmp = null;
+    private BitmapFactory.Options bmo = null;
 
-    // image size
     public int IMG_WIDTH = 640;
     public int IMG_HEIGHT = 480;
 
+    //----------------------------------------------------------------------------------------------
+
+    public MjpegView(Context context) {
+        super(context);
+        holder = getHolder();
+        init();
+    }
+
+    public MjpegView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        holder = getHolder();
+        init();
+    }
+
+    private void init() {
+        holder.addCallback(this);
+        thread = new MjpegViewThread(holder);
+        setFocusable(true);
+        overlayPaint = new Paint();
+        overlayPaint.setTextAlign(Paint.Align.LEFT);
+        overlayPaint.setTextSize(12);
+        overlayPaint.setTypeface(Typeface.DEFAULT);
+        overlayTextColor = Color.WHITE;
+        overlayBackgroundColor = Color.BLACK;
+        ovlPos = MjpegView.POSITION_LOWER_RIGHT;
+        displayMode = MjpegView.SIZE_STANDARD;
+        dispWidth = getWidth();
+        dispHeight = getHeight();
+        bmp = null;
+        bmo = null;
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    public void showFps(boolean b) {
+        showFps = b;
+    }
+
+    public void setOverlayPaint(Paint p) {
+        overlayPaint = p;
+    }
+
+    public void setOverlayTextColor(int c) {
+        overlayTextColor = c;
+    }
+
+    public void setOverlayBackgroundColor(int c) {
+        overlayBackgroundColor = c;
+    }
+
+    public void setOverlayPosition(int p) {
+        ovlPos = p;
+    }
+
+    public void setDisplayMode(int s) {
+        displayMode = s;
+    }
+
+    public void setResolution(int w, int h) {
+        IMG_WIDTH = w;
+        IMG_HEIGHT = h;
+    }
+
+    public boolean isStreaming() {
+        return mRun;
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    public void setSource(MjpegInputStream source) {
+        mIn = source;
+        if (!suspending) {
+            startPlayback();
+        } else {
+            resumePlayback();
+        }
+    }
+
+    public void startPlayback() {
+        if (mIn != null) {
+            mRun = true;
+            if (thread == null) {
+                thread = new MjpegViewThread(holder);
+            }
+            thread.start();
+        }
+    }
+
+    public void resumePlayback() {
+        if (suspending) {
+            if (mIn != null) {
+                mRun = true;
+                SurfaceHolder holder = getHolder();
+                holder.addCallback(this);
+                thread = new MjpegViewThread(holder);
+                thread.start();
+                suspending = false;
+            }
+        }
+    }
+
+    public void stopPlayback() {
+        if (mRun) {
+            suspending = true;
+        }
+        mRun = false;
+        if (thread != null) {
+            boolean retry = true;
+            while (retry) {
+                try {
+                    thread.join();
+                    retry = false;
+                } catch (InterruptedException e) {
+                }
+            }
+            thread = null;
+        }
+        if (mIn != null) {
+            try {
+                mIn.close();
+            } catch (IOException e) {
+            }
+            mIn = null;
+        }
+        bmp = null;
+        bmo = null;
+    }
+
+    public void freeCameraMemory() {
+        if (mIn != null) {
+            mIn.freeCameraMemory();
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    public void surfaceChanged(SurfaceHolder holder, int f, int w, int h) {
+        if (thread != null) {
+            thread.setSurfaceSize(w, h);
+        }
+    }
+
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        surfaceDone = false;
+        stopPlayback();
+    }
+
+    public void surfaceCreated(SurfaceHolder holder) {
+        surfaceDone = true;
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * Thread used for drawing on the surface
+     */
     public class MjpegViewThread extends Thread {
         private SurfaceHolder mSurfaceHolder;
         private int frameCounter = 0;
@@ -132,19 +289,21 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
 
                 if (surfaceDone) {
                     try {
-//                        if (bmp == null) {
-//                            bmp = Bitmap.createBitmap(IMG_WIDTH, IMG_HEIGHT, Bitmap.Config.ARGB_8888);
-//                        }
-//                        int ret = mIn.readMjpegFrame(bmp);
-//
-//                        if (ret == -1) {
-//                            return;
-//                        }
-                        bmp = mIn.readMjpegFrame();
-                        if (bmp == null) {
-                            return;
+                        if (bmp == null || bmo == null) {
+                            bmp = mIn.readMjpegFrame();
+                            bmo = new BitmapFactory.Options();
+                            bmo.inMutable = true;
+                            bmo.inBitmap = bmp;
+                            bmo.inSampleSize = 1;
+                            if (bmp == null) {
+                                return;
+                            }
+                        } else {
+                            int result = mIn.readMjpegFrame(bmp, bmo);
+                            if (result == -1) {
+                                return;
+                            }
                         }
-
 
                         destRect = destRect(bmp.getWidth(), bmp.getHeight());
 
@@ -191,143 +350,5 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
-    private void init(Context context) {
-        //SurfaceHolder holder = getHolder();
-        holder = getHolder();
-        holder.addCallback(this);
-        thread = new MjpegViewThread(holder);
-        setFocusable(true);
-        overlayPaint = new Paint();
-        overlayPaint.setTextAlign(Paint.Align.LEFT);
-        overlayPaint.setTextSize(12);
-        overlayPaint.setTypeface(Typeface.DEFAULT);
-        overlayTextColor = Color.WHITE;
-        overlayBackgroundColor = Color.BLACK;
-        ovlPos = MjpegView.POSITION_LOWER_RIGHT;
-        displayMode = MjpegView.SIZE_STANDARD;
-        dispWidth = getWidth();
-        dispHeight = getHeight();
-    }
 
-    public void startPlayback() {
-        if (mIn != null) {
-            mRun = true;
-            if (thread == null) {
-                thread = new MjpegViewThread(holder);
-            }
-            thread.start();
-        }
-    }
-
-    public void resumePlayback() {
-        if (suspending) {
-            if (mIn != null) {
-                mRun = true;
-                SurfaceHolder holder = getHolder();
-                holder.addCallback(this);
-                thread = new MjpegViewThread(holder);
-                thread.start();
-                suspending = false;
-            }
-        }
-    }
-
-    public void stopPlayback() {
-        if (mRun) {
-            suspending = true;
-        }
-        mRun = false;
-        if (thread != null) {
-            boolean retry = true;
-            while (retry) {
-                try {
-                    thread.join();
-                    retry = false;
-                } catch (InterruptedException e) {
-                }
-            }
-            thread = null;
-        }
-        if (mIn != null) {
-            try {
-                mIn.close();
-            } catch (IOException e) {
-            }
-            mIn = null;
-        }
-
-    }
-
-    public void freeCameraMemory() {
-        if (mIn != null) {
-            mIn.freeCameraMemory();
-        }
-    }
-
-    public MjpegView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
-    }
-
-    public void surfaceChanged(SurfaceHolder holder, int f, int w, int h) {
-        if (thread != null) {
-            thread.setSurfaceSize(w, h);
-        }
-    }
-
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        surfaceDone = false;
-        stopPlayback();
-    }
-
-    public MjpegView(Context context) {
-        super(context);
-        init(context);
-    }
-
-    public void surfaceCreated(SurfaceHolder holder) {
-        surfaceDone = true;
-    }
-
-    public void showFps(boolean b) {
-        showFps = b;
-    }
-
-    public void setSource(MjpegInputStream source) {
-        mIn = source;
-        if (!suspending) {
-            startPlayback();
-        } else {
-            resumePlayback();
-        }
-    }
-
-    public void setOverlayPaint(Paint p) {
-        overlayPaint = p;
-    }
-
-    public void setOverlayTextColor(int c) {
-        overlayTextColor = c;
-    }
-
-    public void setOverlayBackgroundColor(int c) {
-        overlayBackgroundColor = c;
-    }
-
-    public void setOverlayPosition(int p) {
-        ovlPos = p;
-    }
-
-    public void setDisplayMode(int s) {
-        displayMode = s;
-    }
-
-    public void setResolution(int w, int h) {
-        IMG_WIDTH = w;
-        IMG_HEIGHT = h;
-    }
-
-    public boolean isStreaming() {
-        return mRun;
-    }
 }
