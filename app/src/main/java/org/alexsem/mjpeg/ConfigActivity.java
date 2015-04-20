@@ -185,6 +185,7 @@ public class ConfigActivity extends ActionBarActivity {
         public void onRouteSelected(MediaRouter router, MediaRouter.RouteInfo info) {
             Log.d(TAG, "onRouteSelected: info = " + info);
             mCastDevice = CastDevice.getFromBundle(info.getExtras());
+            Toast.makeText(ConfigActivity.this, String.format(getString(R.string.cast_connected_to), info.getName()), Toast.LENGTH_SHORT).show();
             launchReceiver();
         }
 
@@ -192,7 +193,7 @@ public class ConfigActivity extends ActionBarActivity {
         public void onRouteUnselected(MediaRouter router, MediaRouter.RouteInfo info) {
             Log.d(TAG, "onRouteUnselected: info=" + info);
             teardown();
-            mCastDevice = null;
+            Toast.makeText(ConfigActivity.this, R.string.cast_disconnected, Toast.LENGTH_SHORT).show();
         }
     }
 
