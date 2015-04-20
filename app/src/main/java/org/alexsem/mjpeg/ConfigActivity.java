@@ -34,7 +34,11 @@ import com.google.android.gms.common.api.Status;
 
 import org.alexsem.mjpeg.adapter.CameraConfigAdapter;
 import org.alexsem.mjpeg.database.DataProvider;
+import org.alexsem.mjpeg.util.Utils;
 import org.askerov.dynamicgrid.DynamicGridView;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -137,7 +141,7 @@ public class ConfigActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mMediaRouter.addCallback(mMediaRouteSelector, mMediaRouterCallback, MediaRouter.CALLBACK_FLAG_PERFORM_ACTIVE_SCAN);
+        mMediaRouter.addCallback(mMediaRouteSelector, mMediaRouterCallback, MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY);
     }
 
     @Override
@@ -276,6 +280,7 @@ public class ConfigActivity extends ActionBarActivity {
                                             Log.e(TAG, "Exception while creating channel", e);
                                         }
                                         // Set the initial instructions on the receiver
+//                                        sendMessage(generateCastMessage()); //TODO
                                         sendMessage("Init"); //TODO change
                                     } else {
                                         Log.e(TAG, "Application could not launch: " + status.toString());
@@ -378,6 +383,48 @@ public class ConfigActivity extends ActionBarActivity {
         @Override
         public void onMessageReceived(CastDevice castDevice, String namespace, String message) {
             Log.d(TAG, "onMessageReceived: " + message);
+        }
+
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * Generate message with all camera data (for casting)
+     * @return Generated string
+     */
+    private String generateCastMessage() {
+        String[] projection = {
+                DataProvider.Camera.ID,
+                DataProvider.Camera.NAME,
+                DataProvider.Camera.HOST,
+                DataProvider.Camera.MODE,
+                DataProvider.Camera.ENABLED,
+                DataProvider.Camera.ORDER
+        };
+        Cursor cursor = getContentResolver().query(DataProvider.Camera.CONTENT_URI, projection, null, null, DataProvider.Camera.ORDER);
+        try {
+            if (cursor.moveToFirst()) {
+                JSONObject jMessage = new JSONObject();
+                JSONArray jCameras = new JSONArray();
+                int i = 0;
+                do {
+                    JSONObject jCamera = new JSONObject();
+                    jCamera.put("order", cursor.getInt(cursor.getColumnIndex(DataProvider.Camera.ORDER)));
+                    jCamera.put("name", cursor.getString(cursor.getColumnIndex(DataProvider.Camera.NAME)));
+                    jCamera.put("url", Utils.generateMpegUrl(cursor.getString(cursor.getColumnIndex(DataProvider.Camera.HOST))));
+                    jCamera.put("visible", cursor.getInt(cursor.getColumnIndex(DataProvider.Camera.ENABLED)) > 0);
+                    jCameras.put(jCamera);
+                } while (cursor.moveToNext() && ++i < mCameraCount);
+                jMessage.put("cameras", jCameras);
+                return jMessage.toString(0);
+            } else {
+                return "";
+            }
+        } catch (JSONException ex) {
+            return "";
+        } finally {
+            cursor.close();
         }
 
     }
