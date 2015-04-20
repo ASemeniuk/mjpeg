@@ -6,6 +6,7 @@
     <string name="action_cast">Cast to device</string>
 
     <string name="config_cameras">Cameras:</string>
+    <string name="config_namespace">urn:x-cast:org.alexsem.mjpeg.receiver</string>
 
     <string name="camera_enabled">Enabled:</string>
     <string name="camera_name">Name:</string>
