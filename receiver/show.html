@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<style type="text/css">
+		html,body {
+			margin:0;
+			padding:0;
+			height:100%;
+			width:100%;
+			border:none
+		}
+		table {
+			margin:0;
+			padding:0;
+			height:100%;
+			width:100%;
+			border:none
+		}
+		td {
+			/*background-image: url("http://172.24.25.118:8080/videofeed");*/
+			display: none;
+			background-color: #000;
+			background-repeat: no-repeat;
+			background-position: center center;
+			background-size: cover;
+		}
+	</style>
+	<title>Mjpeg Translator</title>
+</head>
+<body>
+	<table cellspacing="1px">
+		<tr>
+			<td id="camera1"></td>
+			<td id="camera2"></td>
+			<td id="camera3"></td>
+ 		</tr>
+		<tr id="row2">
+			<td id="camera4"></td>
+			<td id="camera5"></td>
+			<td id="camera6"></td>
+ 		</tr>
+		<tr id="row3">
+			<td id="camera7"></td>
+			<td id="camera8"></td>
+			<td id="camera9"></td>
+ 		</tr>
+	</table>
+	<script type="text/javascript">
+		var ids4 = ['camera1', 'camera2', 'camera4', 'camera5'];
+		var ids9 = ['camera1', 'camera2', 'camera3', 'camera4', 'camera5', 'camera6', 'camera7', 'camera8', 'camera9'];
+
+		window.onload = function() {
+			initialize('{"cameras": [ {"order": 1, "name": "Camera 1", "source": "http://loremflickr.com/320/240", "visible": true}, {"order": 2, "name": "Camera 2", "source":"http://172.24.25.118:8080/videofeed", "visible": false}, {"order": 3, "name": "Camera 3", "source":"http://172.24.25.118:8080/videofeed", "visible": true}, {"order": 4, "name": "Camera 4", "source":"http://loremflickr.com/320/240", "visible": true}, {"order": 5, "name": "Camera 5", "source":"http://172.24.25.118:8080/videofeed", "visible": true}, {"order": 6, "name": "Camera 6", "source":"http://172.24.25.118:8080/videofeed", "visible": true}, {"order": 7, "name": "Camera 7", "source":"http://172.24.25.118:8080/videofeed", "visible": true}, {"order": 8, "name": "Camera 8", "source":"http://172.24.25.118:8080/videofeed", "visible": false}, {"order": 9, "name": "Camera 9", "source":"http://172.24.25.118:8080/videofeed", "visible": true}]}');
+      	};
+      
+		function initialize(text) {
+			for (var id of ids9) { 
+				document.getElementById(id).style.display = 'none';
+			}
+			obj = JSON.parse(text);
+			var count = obj.cameras.length; 
+			var ids = count == 9 ? ids9 : ids4;
+			document.getElementById('row2').style.display = count > 2 ? 'table-row' : 'none';
+			document.getElementById('row3').style.display = count > 4 ? 'table-row' : 'none';
+			for (var camera of obj.cameras) {
+				var td = document.getElementById(ids[camera.order - 1]);
+				td.style.display = 'table-cell';
+				if (camera.visible) {
+					td.style.backgroundImage = 'url("' + camera.source +'?random=' + Math.floor((Math.random() * 1000)) + '")';
+				} else {
+					td.style.backgroundImage = 'none';
+				}
+			}
+      	};
+    </script>
+</body>
+</html>
