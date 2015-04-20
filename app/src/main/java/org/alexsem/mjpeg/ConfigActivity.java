@@ -43,6 +43,7 @@ import java.util.List;
 public class ConfigActivity extends ActionBarActivity {
 
     private static final String TAG = ConfigActivity.class.getSimpleName();
+    private static final String RECEIVER_ID = "C7EC4FCA";
 
     private DynamicGridView mGrid;
     private CameraConfigAdapter mAdapter;
@@ -54,9 +55,6 @@ public class ConfigActivity extends ActionBarActivity {
     private MediaRouter.Callback mMediaRouterCallback;
     private CastDevice mCastDevice;
     private GoogleApiClient mApiClient;
-    private Cast.Listener mCastListener;
-    private ConnectionCallbacks mConnectionCallbacks;
-    private ConnectionFailedListener mConnectionFailedListener;
     private MjpegReceiverChannel mCastChannel;
     private boolean mApplicationStarted;
     private boolean mWaitingForReconnect;
@@ -71,7 +69,7 @@ public class ConfigActivity extends ActionBarActivity {
         mCameraCount = getSharedPreferences(getPackageName(), MODE_PRIVATE).getInt("cameras", 4);
 
         //--- Action bar ---
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, CAMERA_COUNT);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, CAMERA_COUNT);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         ActionBar bar = getSupportActionBar();
         bar.setTitle(R.string.config_cameras);
@@ -128,7 +126,7 @@ public class ConfigActivity extends ActionBarActivity {
         //--- Cast-related objects ---
         mMediaRouter = MediaRouter.getInstance(this);
         mMediaRouteSelector = new MediaRouteSelector.Builder()
-                .addControlCategory(CastMediaControlIntent.categoryForCast(getString(R.string.app_id)))
+                .addControlCategory(CastMediaControlIntent.categoryForCast(RECEIVER_ID))
                 .build();
         mMediaRouterCallback = new MjpegMediaRouterCallback(); //TODO rename
 
@@ -203,7 +201,7 @@ public class ConfigActivity extends ActionBarActivity {
      */
     private void launchReceiver() {
         try {
-            mCastListener = new Cast.Listener() {
+            Cast.Listener castListener = new Cast.Listener() {
                 @Override
                 public void onApplicationDisconnected(int errorCode) {
                     Log.d(TAG, "Application has stopped");
@@ -211,13 +209,13 @@ public class ConfigActivity extends ActionBarActivity {
                 }
             };
             // Connect to Google Play services
-            mConnectionCallbacks = new ConnectionCallbacks();
-            mConnectionFailedListener = new ConnectionFailedListener();
-            Cast.CastOptions.Builder apiOptionsBuilder = Cast.CastOptions.builder(mCastDevice, mCastListener);
+            ConnectionCallbacks connectionCallbacks = new ConnectionCallbacks();
+            ConnectionFailedListener connectionFailedListener = new ConnectionFailedListener();
+            Cast.CastOptions.Builder apiOptionsBuilder = Cast.CastOptions.builder(mCastDevice, castListener);
             mApiClient = new GoogleApiClient.Builder(this)
                     .addApi(Cast.API, apiOptionsBuilder.build())
-                    .addConnectionCallbacks(mConnectionCallbacks)
-                    .addOnConnectionFailedListener(mConnectionFailedListener)
+                    .addConnectionCallbacks(connectionCallbacks)
+                    .addOnConnectionFailedListener(connectionFailedListener)
                     .build();
             mApiClient.connect();
         } catch (Exception e) {
@@ -230,8 +228,7 @@ public class ConfigActivity extends ActionBarActivity {
     /**
      * Google Play services callbacks
      */
-    private class ConnectionCallbacks implements
-            GoogleApiClient.ConnectionCallbacks {
+    private class ConnectionCallbacks implements GoogleApiClient.ConnectionCallbacks {
         @Override
         public void onConnected(Bundle connectionHint) {
             Log.d(TAG, "onConnected");
@@ -257,7 +254,7 @@ public class ConfigActivity extends ActionBarActivity {
                     }
                 } else {
                     // Launch the receiver app
-                    Cast.CastApi.launchApplication(mApiClient, getString(R.string.app_id), false).setResultCallback(
+                    Cast.CastApi.launchApplication(mApiClient, RECEIVER_ID, false).setResultCallback(
                             new ResultCallback<Cast.ApplicationConnectionResult>() {
                                 @Override
                                 public void onResult(Cast.ApplicationConnectionResult result) {
@@ -335,7 +332,7 @@ public class ConfigActivity extends ActionBarActivity {
      * Tear down the connection to the receiver
      */
     private void teardown() {
-        Log.d(TAG, "teardown");
+        Log.d(TAG, "Teardown");
         if (mApiClient != null) {
             if (mApplicationStarted) {
                 if (mApiClient.isConnected() || mApiClient.isConnecting()) {
@@ -371,7 +368,7 @@ public class ConfigActivity extends ActionBarActivity {
          * @return custom namespace
          */
         public String getNamespace() {
-            return getString(R.string.config_namespace);
+            return "urn:x-cast:org.alexsem.mjpeg.receiver";
         }
 
         /*
