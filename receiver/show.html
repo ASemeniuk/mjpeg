@@ -4,6 +4,7 @@
 	<meta charset="utf-8" />
 	<style type="text/css">
 		html,body {
+			background-color: #000;
 			margin:0;
 			padding:0;
 			height:100%;
@@ -11,6 +12,8 @@
 			border:none
 		}
 		table {
+			display: none;
+			background-color: #fff;
 			margin:0;
 			padding:0;
 			height:100%;
@@ -18,18 +21,29 @@
 			border:none
 		}
 		td {
-			/*background-image: url("http://172.24.25.118:8080/videofeed");*/
 			display: none;
 			background-color: #000;
 			background-repeat: no-repeat;
 			background-position: center center;
 			background-size: cover;
 		}
+		div.splash {
+			width: 256px;
+			height: 256px;
+			position: absolute;
+			margin-top: -128px;
+			margin-left: -128px;
+			top: 50%;
+			left: 50%;
+		}
 	</style>
 	<title>Mjpeg Translator</title>
 </head>
 <body>
-	<table cellspacing="1px">
+	<div id="splash" class="splash">
+		<img width="256px" height="256px" src="logo.png">
+	</div>
+	<table id="grid" cellspacing="1px">
 		<tr>
 			<td id="camera1"></td>
 			<td id="camera2"></td>
@@ -44,17 +58,48 @@
 			<td id="camera7"></td>
 			<td id="camera8"></td>
 			<td id="camera9"></td>
- 		</tr>
+		</tr>
 	</table>
+	<script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
 	<script type="text/javascript">
 		var ids4 = ['camera1', 'camera2', 'camera4', 'camera5'];
 		var ids9 = ['camera1', 'camera2', 'camera3', 'camera4', 'camera5', 'camera6', 'camera7', 'camera8', 'camera9'];
 
 		window.onload = function() {
-			initialize('{"cameras": [ {"order": 1, "name": "Camera 1", "source": "http://loremflickr.com/320/240", "visible": true}, {"order": 2, "name": "Camera 2", "source":"http://172.24.25.118:8080/videofeed", "visible": false}, {"order": 3, "name": "Camera 3", "source":"http://172.24.25.118:8080/videofeed", "visible": true}, {"order": 4, "name": "Camera 4", "source":"http://loremflickr.com/320/240", "visible": true}, {"order": 5, "name": "Camera 5", "source":"http://172.24.25.118:8080/videofeed", "visible": true}, {"order": 6, "name": "Camera 6", "source":"http://172.24.25.118:8080/videofeed", "visible": true}, {"order": 7, "name": "Camera 7", "source":"http://172.24.25.118:8080/videofeed", "visible": true}, {"order": 8, "name": "Camera 8", "source":"http://172.24.25.118:8080/videofeed", "visible": false}, {"order": 9, "name": "Camera 9", "source":"http://172.24.25.118:8080/videofeed", "visible": true}]}');
-      	};
-      
+			window.castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
+
+			window.castReceiverManager.onReady = function(event) { // Handler for the 'Ready' event
+				window.castReceiverManager.setApplicationState("Application status is ready...");
+			};
+			
+			window.castReceiverManager.onSenderConnected = function(event) { // Handler for 'SenderConnected' event
+				//console.log(window.castReceiverManager.getSender(event.data).userAgent);
+			};
+
+			window.castReceiverManager.onSenderDisconnected = function(event) { // Handler for 'SenderDisconnected' event
+				if (window.castReceiverManager.getSenders().length == 0) {
+					window.close();
+				}
+			};
+
+			// Create a CastMessageBus to handle messages for a custom namespace
+			window.messageBus = window.castReceiverManager.getCastMessageBus('urn:x-cast:org.alexsem.mjpeg.receiver');
+
+			window.messageBus.onMessage = function(event) { // handler for the CastMessageBus message event
+				initialize(event.data);
+				// Inform all senders on the CastMessageBus of the incoming message event
+				window.messageBus.send(event.senderId, event.data);
+			}
+
+			// Initialize the CastReceiverManager with an application status message
+			window.castReceiverManager.start({statusText: "Application is starting", maxInactivity: 600});
+
+			initialize('{"cameras":[{"order":1,"name":"Camera ","url":"http://172.24.25.118:8080/videofeed","visible":true},{"order":2,"name":"Camera 2","url":"http://unknown:8080/videofeed","visible":true},{"order":3,"name":"Camera 3","url":"http://unknown:8080/videofeed","visible":true},{"order":4,"name":"Camera 4","url":"http://unknown:8080/videofeed","visible":true}]}');
+		};
+
 		function initialize(text) {
+			document.getElementById('splash').style.display = 'none';
+			document.getElementById('grid').style.display = 'table';
 			for (var id of ids9) { 
 				document.getElementById(id).style.display = 'none';
 			}
@@ -67,12 +112,13 @@
 				var td = document.getElementById(ids[camera.order - 1]);
 				td.style.display = 'table-cell';
 				if (camera.visible) {
-					td.style.backgroundImage = 'url("' + camera.source +'?random=' + Math.floor((Math.random() * 1000)) + '")';
+					td.style.backgroundImage = 'url("' + camera.url +'?random=' + Math.floor((Math.random() * 1000)) + '")';
+					alert('url("' + camera.url +'?random=' + Math.floor((Math.random() * 1000)) + '")');
 				} else {
 					td.style.backgroundImage = 'none';
 				}
 			}
-      	};
-    </script>
+		};
+	</script>
 </body>
 </html>

@@ -36,9 +36,6 @@ import org.alexsem.mjpeg.adapter.CameraConfigAdapter;
 import org.alexsem.mjpeg.database.DataProvider;
 import org.alexsem.mjpeg.util.Utils;
 import org.askerov.dynamicgrid.DynamicGridView;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -265,6 +262,10 @@ public class ConfigActivity extends ActionBarActivity {
                                 public void onResult(Cast.ApplicationConnectionResult result) {
                                     Status status = result.getStatus();
                                     Log.d(TAG, "ApplicationConnectionResultCallback.onResult: statusCode " + status.getStatusCode());
+                                    if (status.getStatusCode() == 15) { //Timeout, try again
+                                        launchReceiver();
+                                        return;
+                                    }
                                     if (status.isSuccess()) {
                                         ApplicationMetadata applicationMetadata = result.getApplicationMetadata();
                                         mSessionId = result.getSessionId();
@@ -280,8 +281,7 @@ public class ConfigActivity extends ActionBarActivity {
                                             Log.e(TAG, "Exception while creating channel", e);
                                         }
                                         // Set the initial instructions on the receiver
-//                                        sendMessage(generateCastMessage()); //TODO
-                                        sendMessage("Init"); //TODO change
+                                        sendMessage(generateCastMessage());
                                     } else {
                                         Log.e(TAG, "Application could not launch: " + status.toString());
                                         teardown();
@@ -360,7 +360,7 @@ public class ConfigActivity extends ActionBarActivity {
         mCastDevice = null;
         mWaitingForReconnect = false;
         mSessionId = null;
-        mMediaRouter.selectRoute(mMediaRouter.getDefaultRoute()); //TODO check
+//        mMediaRouter.selectRoute(mMediaRouter.getDefaultRoute()); //TODO check
     }
 
     //----------------------------------------------------------------------------------------------
@@ -405,24 +405,24 @@ public class ConfigActivity extends ActionBarActivity {
         Cursor cursor = getContentResolver().query(DataProvider.Camera.CONTENT_URI, projection, null, null, DataProvider.Camera.ORDER);
         try {
             if (cursor.moveToFirst()) {
-                JSONObject jMessage = new JSONObject();
-                JSONArray jCameras = new JSONArray();
+                StringBuilder builder = new StringBuilder("{\"cameras\":[");
                 int i = 0;
                 do {
-                    JSONObject jCamera = new JSONObject();
-                    jCamera.put("order", cursor.getInt(cursor.getColumnIndex(DataProvider.Camera.ORDER)));
-                    jCamera.put("name", cursor.getString(cursor.getColumnIndex(DataProvider.Camera.NAME)));
-                    jCamera.put("url", Utils.generateMpegUrl(cursor.getString(cursor.getColumnIndex(DataProvider.Camera.HOST))));
-                    jCamera.put("visible", cursor.getInt(cursor.getColumnIndex(DataProvider.Camera.ENABLED)) > 0);
-                    jCameras.put(jCamera);
+                    if (i > 0) {
+                        builder.append(",");
+                    }
+                    builder.append("{");
+                    builder.append("\"order\":").append(cursor.getInt(cursor.getColumnIndex(DataProvider.Camera.ORDER))).append(",");
+                    builder.append("\"name\":\"").append(cursor.getString(cursor.getColumnIndex(DataProvider.Camera.NAME))).append("\",");
+                    builder.append("\"url\":\"").append(Utils.generateMpegUrl(cursor.getString(cursor.getColumnIndex(DataProvider.Camera.HOST)))).append("\",");
+                    builder.append("\"visible\":").append(cursor.getInt(cursor.getColumnIndex(DataProvider.Camera.ENABLED)) > 0);
+                    builder.append("}");
                 } while (cursor.moveToNext() && ++i < mCameraCount);
-                jMessage.put("cameras", jCameras);
-                return jMessage.toString(0);
+                builder.append("]}");
+                return builder.toString();
             } else {
                 return "";
             }
-        } catch (JSONException ex) {
-            return "";
         } finally {
             cursor.close();
         }
