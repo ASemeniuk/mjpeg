@@ -52,19 +52,19 @@
 	</div>
 	<table id="grid" cellspacing="1px">
 		<tr>
-			<td id="camera1">1</td>
-			<td id="camera2">12</td>
-			<td id="camera3">123</td>
+			<td id="camera1"></td>
+			<td id="camera2"></td>
+			<td id="camera3"></td>
  		</tr>
 		<tr id="row2">
-			<td id="camera4">1234</td>
-			<td id="camera5">12345</td>
-			<td id="camera6">123456</td>
+			<td id="camera4"></td>
+			<td id="camera5"></td>
+			<td id="camera6"></td>
  		</tr>
 		<tr id="row3">
-			<td id="camera7">1234567</td>
-			<td id="camera8">12345678</td>
-			<td id="camera9">123456789</td>
+			<td id="camera7"></td>
+			<td id="camera8"></td>
+			<td id="camera9"></td>
 		</tr>
 	</table>
 	<script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
@@ -73,8 +73,6 @@
 		var ids9 = ['camera1', 'camera2', 'camera3', 'camera4', 'camera5', 'camera6', 'camera7', 'camera8', 'camera9'];
 
 		window.onload = function() {
-			//initialize('{"cameras":[{"order":1,"name":"Camera ","url":"http://unknown:8080/videofeed","visible":true},{"order":2,"name":"Camera 2","url":"http://unknown:8080/videofeed","visible":true},{"order":3,"name":"Camera 3","url":"http://unknown:8080/videofeed","visible":false},{"order":4,"name":"Camera 4","url":"http://unknown:8080/videofeed","visible":true}]}');
-
 			window.castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
 
 			window.castReceiverManager.onReady = function(event) { // Handler for the 'Ready' event
@@ -106,6 +104,9 @@
 		};
 
 		function initialize(text) {
+			if (text === '') { //No data passed
+				return;
+			}
 			document.getElementById('splash').style.display = 'none';
 			document.getElementById('grid').style.display = 'table';
 			for (var id of ids9) { 

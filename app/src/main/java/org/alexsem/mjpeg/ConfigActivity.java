@@ -303,7 +303,7 @@ public class ConfigActivity extends ActionBarActivity {
     private class ConnectionFailedListener implements GoogleApiClient.OnConnectionFailedListener {
         @Override
         public void onConnectionFailed(ConnectionResult result) {
-            Log.e(TAG, "onConnectionFailed ");
+            Log.e(TAG, "onConnectionFailed");
             teardown();
         }
     }
