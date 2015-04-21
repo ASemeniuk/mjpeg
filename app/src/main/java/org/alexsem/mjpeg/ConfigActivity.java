@@ -242,52 +242,18 @@ public class ConfigActivity extends ActionBarActivity {
             try {
                 if (mWaitingForReconnect) {
                     mWaitingForReconnect = false;
-                    // Check if the receiver app is still running
-                    if ((connectionHint != null) && connectionHint.getBoolean(Cast.EXTRA_APP_NO_LONGER_RUNNING)) {
+                    if ((connectionHint != null) && connectionHint.getBoolean(Cast.EXTRA_APP_NO_LONGER_RUNNING)) { //Check if the receiver app is still running
                         Log.d(TAG, "App  is no longer running");
                         teardown();
-                    } else {
-                        // Re-create the custom message channel
+                    } else { //Re-create the custom message channel
                         try {
                             Cast.CastApi.setMessageReceivedCallbacks(mApiClient, mCastChannel.getNamespace(), mCastChannel);
                         } catch (IOException e) {
                             Log.e(TAG, "Exception while creating channel", e);
                         }
                     }
-                } else {
-                    // Launch the receiver app
-                    Cast.CastApi.launchApplication(mApiClient, RECEIVER_ID, false).setResultCallback(
-                            new ResultCallback<Cast.ApplicationConnectionResult>() {
-                                @Override
-                                public void onResult(Cast.ApplicationConnectionResult result) {
-                                    Status status = result.getStatus();
-                                    Log.d(TAG, "ApplicationConnectionResultCallback.onResult: statusCode " + status.getStatusCode());
-                                    if (status.getStatusCode() == 15) { //Timeout, try again
-                                        launchReceiver();
-                                        return;
-                                    }
-                                    if (status.isSuccess()) {
-                                        ApplicationMetadata applicationMetadata = result.getApplicationMetadata();
-                                        mSessionId = result.getSessionId();
-                                        String applicationStatus = result.getApplicationStatus();
-                                        boolean wasLaunched = result.getWasLaunched();
-                                        Log.d(TAG, String.format("Application name: %s, status: %s, sessionId: %s, wasLaunched: %b", applicationMetadata.getName(), applicationStatus, mSessionId, wasLaunched));
-                                        mApplicationStarted = true;
-                                        // Create the custom message channel
-                                        mCastChannel = new MjpegReceiverChannel();
-                                        try {
-                                            Cast.CastApi.setMessageReceivedCallbacks(mApiClient, mCastChannel.getNamespace(), mCastChannel);
-                                        } catch (IOException e) {
-                                            Log.e(TAG, "Exception while creating channel", e);
-                                        }
-                                        // Set the initial instructions on the receiver
-                                        sendMessage(generateCastMessage());
-                                    } else {
-                                        Log.e(TAG, "Application could not launch: " + status.toString());
-                                        teardown();
-                                    }
-                                }
-                            });
+                } else { //Launch the receiver app
+                    Cast.CastApi.launchApplication(mApiClient, RECEIVER_ID, false).setResultCallback(new ConnectionResultCallback());
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Failed to launch application", e);
@@ -299,6 +265,39 @@ public class ConfigActivity extends ActionBarActivity {
             Log.d(TAG, "onConnectionSuspended");
             mWaitingForReconnect = true;
         }
+    }
+
+    private class ConnectionResultCallback implements ResultCallback<Cast.ApplicationConnectionResult> {
+        @Override
+        public void onResult(Cast.ApplicationConnectionResult result) {
+            Status status = result.getStatus();
+            Log.d(TAG, "ApplicationConnectionResultCallback.onResult: statusCode " + status.getStatusCode());
+            if (status.getStatusCode() == 15 && mApiClient != null) { //Timeout, try again
+                Cast.CastApi.launchApplication(mApiClient, RECEIVER_ID, false).setResultCallback(new ConnectionResultCallback());
+                return;
+            }
+            if (status.isSuccess()) {
+                ApplicationMetadata applicationMetadata = result.getApplicationMetadata();
+                mSessionId = result.getSessionId();
+                String applicationStatus = result.getApplicationStatus();
+                boolean wasLaunched = result.getWasLaunched();
+                Log.d(TAG, String.format("Application name: %s, status: %s, sessionId: %s, wasLaunched: %b", applicationMetadata.getName(), applicationStatus, mSessionId, wasLaunched));
+                mApplicationStarted = true;
+                // Create the custom message channel
+                mCastChannel = new MjpegReceiverChannel();
+                try {
+                    Cast.CastApi.setMessageReceivedCallbacks(mApiClient, mCastChannel.getNamespace(), mCastChannel);
+                } catch (IOException e) {
+                    Log.e(TAG, "Exception while creating channel", e);
+                }
+                // Set the initial instructions on the receiver
+                sendMessage(generateCastMessage());
+            } else {
+                Log.e(TAG, "Application could not launch: " + status.toString());
+                teardown();
+            }
+        }
+
     }
 
     private class ConnectionFailedListener implements GoogleApiClient.OnConnectionFailedListener {
