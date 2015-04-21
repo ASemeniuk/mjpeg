@@ -13,7 +13,7 @@
 		}
 		table {
 			display: none;
-			background-color: #fff;
+			background-color: #ddd;
 			margin:0;
 			padding:0;
 			height:100%;
@@ -21,7 +21,14 @@
 			border:none
 		}
 		td {
+			font-family: Verdana, Geneva, sans-serif;
+			font-size: 20px;
+			color: #aaa;
+			padding-left: 12px;
+			padding-top: 8px;
 			display: none;
+			max-width: 0;
+			vertical-align: top;
 			background-color: #000;
 			background-repeat: no-repeat;
 			background-position: center center;
@@ -45,19 +52,19 @@
 	</div>
 	<table id="grid" cellspacing="1px">
 		<tr>
-			<td id="camera1"></td>
-			<td id="camera2"></td>
-			<td id="camera3"></td>
+			<td id="camera1">1</td>
+			<td id="camera2">12</td>
+			<td id="camera3">123</td>
  		</tr>
 		<tr id="row2">
-			<td id="camera4"></td>
-			<td id="camera5"></td>
-			<td id="camera6"></td>
+			<td id="camera4">1234</td>
+			<td id="camera5">12345</td>
+			<td id="camera6">123456</td>
  		</tr>
 		<tr id="row3">
-			<td id="camera7"></td>
-			<td id="camera8"></td>
-			<td id="camera9"></td>
+			<td id="camera7">1234567</td>
+			<td id="camera8">12345678</td>
+			<td id="camera9">123456789</td>
 		</tr>
 	</table>
 	<script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
@@ -66,6 +73,8 @@
 		var ids9 = ['camera1', 'camera2', 'camera3', 'camera4', 'camera5', 'camera6', 'camera7', 'camera8', 'camera9'];
 
 		window.onload = function() {
+			//initialize('{"cameras":[{"order":1,"name":"Camera ","url":"http://unknown:8080/videofeed","visible":true},{"order":2,"name":"Camera 2","url":"http://unknown:8080/videofeed","visible":true},{"order":3,"name":"Camera 3","url":"http://unknown:8080/videofeed","visible":false},{"order":4,"name":"Camera 4","url":"http://unknown:8080/videofeed","visible":true}]}');
+
 			window.castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
 
 			window.castReceiverManager.onReady = function(event) { // Handler for the 'Ready' event
@@ -94,7 +103,6 @@
 			// Initialize the CastReceiverManager with an application status message
 			window.castReceiverManager.start({statusText: "Application is starting", maxInactivity: 600});
 
-			initialize('{"cameras":[{"order":1,"name":"Camera ","url":"http://172.24.25.118:8080/videofeed","visible":true},{"order":2,"name":"Camera 2","url":"http://unknown:8080/videofeed","visible":true},{"order":3,"name":"Camera 3","url":"http://unknown:8080/videofeed","visible":true},{"order":4,"name":"Camera 4","url":"http://unknown:8080/videofeed","visible":true}]}');
 		};
 
 		function initialize(text) {
@@ -113,9 +121,10 @@
 				td.style.display = 'table-cell';
 				if (camera.visible) {
 					td.style.backgroundImage = 'url("' + camera.url +'?random=' + Math.floor((Math.random() * 1000)) + '")';
-					alert('url("' + camera.url +'?random=' + Math.floor((Math.random() * 1000)) + '")');
+					td.innerHTML = camera.name;
 				} else {
 					td.style.backgroundImage = 'none';
+					td.innerHTML = '';
 				}
 			}
 		};
