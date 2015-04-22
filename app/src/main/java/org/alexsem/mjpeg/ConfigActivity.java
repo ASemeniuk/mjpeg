@@ -21,8 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.cast.ApplicationMetadata;
@@ -170,13 +168,10 @@ public class ConfigActivity extends ActionBarActivity {
         mRefreshItem = menu.findItem(R.id.action_refresh);
         mRefreshProgress = getLayoutInflater().inflate(R.layout.action_progress, null);
         if (mMediaRouter != null && mMediaRouter.getSelectedRoute() != mMediaRouter.getDefaultRoute()) {
-            mPlayItem.setVisible(false); //TODO test
+            mPlayItem.setVisible(false);
         }
-        if (mMediaRouter != null && mMediaRouter.getSelectedRoute() != mMediaRouter.getDefaultRoute()) {
+        if (mSessionId != null) {
             mRefreshItem.setVisible(true);
-            if (mSessionId == null) {
-                MenuItemCompat.setActionView(mRefreshItem, mRefreshProgress);
-            }
         }
         return true;
     }
@@ -209,11 +204,7 @@ public class ConfigActivity extends ActionBarActivity {
             Toast.makeText(ConfigActivity.this, String.format(getString(R.string.cast_connected_to), info.getName()), Toast.LENGTH_SHORT).show();
             launchReceiver();
             if (mPlayItem != null) {
-                mPlayItem.setVisible(false); //TODO test
-            }
-            if (mRefreshItem!= null) {
-                mRefreshItem.setVisible(true); //TODO test
-                MenuItemCompat.setActionView(mRefreshItem, mRefreshProgress);
+                mPlayItem.setVisible(false);
             }
         }
 
@@ -223,10 +214,7 @@ public class ConfigActivity extends ActionBarActivity {
             teardown();
             Toast.makeText(ConfigActivity.this, R.string.cast_disconnected, Toast.LENGTH_SHORT).show();
             if (mPlayItem != null) {
-                mPlayItem.setVisible(true); //TODO test
-            }
-            if (mRefreshItem!= null) {
-                mRefreshItem.setVisible(false); //TODO test
+                mPlayItem.setVisible(true);
             }
         }
     }
@@ -289,10 +277,6 @@ public class ConfigActivity extends ActionBarActivity {
                     }
                 } else { //Launch the receiver app
                     Cast.CastApi.launchApplication(mApiClient, RECEIVER_ID, false).setResultCallback(new ConnectionResultCallback());
-                    if (mRefreshItem != null) {
-                        mRefreshItem.setVisible(true);
-                        MenuItemCompat.setActionView(mRefreshItem, mRefreshProgress);
-                    }
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Failed to launch application", e);
@@ -406,15 +390,15 @@ public class ConfigActivity extends ActionBarActivity {
             }
             mApiClient = null;
         }
-        if (mRefreshItem != null) {
-            mRefreshItem.setVisible(false);
-        }
         mCastDevice = null;
         mWaitingForReconnect = false;
         mSessionId = null;
+        if (mRefreshItem != null) {
+            mRefreshItem.setVisible(false);
+        }
     }
 
-    //----------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
     /**
      * Custom message channel
@@ -525,3 +509,5 @@ public class ConfigActivity extends ActionBarActivity {
         }
     };
 }
+
+//TODO handle orientation changes
