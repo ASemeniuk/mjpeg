@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/darker_gray"
+    android:orientation="vertical"
     android:padding="1dp">
 
     <org.askerov.dynamicgrid.DynamicGridView
         android:id="@+id/camera_grid"
-        android:scaleType="centerInside"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:numColumns="3"
-        android:verticalSpacing="1dp"
-        android:isScrollContainer="false"
         android:drawSelectorOnTop="true"
-        android:scrollbars="none"
         android:fadingEdgeLength="0dp"
+        android:gravity="center"
         android:horizontalSpacing="1dp"
+        android:isScrollContainer="false"
+        android:numColumns="3"
+        android:scaleType="centerInside"
+        android:scrollbars="none"
         android:stretchMode="columnWidth"
-        android:gravity="center"/>
+        android:verticalSpacing="1dp"/>
 
 </LinearLayout>

@@ -21,6 +21,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.cast.ApplicationMetadata;
@@ -43,11 +45,12 @@ import java.util.List;
 
 public class ConfigActivity extends ActionBarActivity {
 
-    private static final String TAG = ConfigActivity.class.getSimpleName();
+    private static final String TAG = ConfigActivity.class.getSimpleName(); //TODO remove
     private static final String RECEIVER_ID = "C7EC4FCA";
 
     private DynamicGridView mGrid;
     private CameraConfigAdapter mAdapter;
+    private MenuItem mPlayItem;
     private int mCameraCount = 1;
     private int mOneDp = 0;
 
@@ -60,6 +63,8 @@ public class ConfigActivity extends ActionBarActivity {
     private boolean mApplicationStarted;
     private boolean mWaitingForReconnect;
     private String mSessionId;
+    private MenuItem mRefreshItem;
+    private View mRefreshProgress;
 
     private final List<String> CAMERA_COUNT = Arrays.asList("1", "2", "4", "9");
 
@@ -129,7 +134,7 @@ public class ConfigActivity extends ActionBarActivity {
         mMediaRouteSelector = new MediaRouteSelector.Builder()
                 .addControlCategory(CastMediaControlIntent.categoryForCast(RECEIVER_ID))
                 .build();
-        mMediaRouterCallback = new MjpegMediaRouterCallback(); //TODO rename
+        mMediaRouterCallback = new MjpegMediaRouterCallback();
 
         //--- Load data ---
         getSupportLoaderManager().initLoader(0, null, mLoaderCallbacks);
@@ -158,9 +163,21 @@ public class ConfigActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.config, menu);
+        mPlayItem = menu.findItem(R.id.action_play);
         MenuItem media_route_menu_item = menu.findItem(R.id.action_cast);
         MediaRouteActionProvider provider = (MediaRouteActionProvider) MenuItemCompat.getActionProvider(media_route_menu_item);
         provider.setRouteSelector(mMediaRouteSelector);
+        mRefreshItem = menu.findItem(R.id.action_refresh);
+        mRefreshProgress = getLayoutInflater().inflate(R.layout.action_progress, null);
+        if (mMediaRouter != null && mMediaRouter.getSelectedRoute() != mMediaRouter.getDefaultRoute()) {
+            mPlayItem.setVisible(false); //TODO test
+        }
+        if (mMediaRouter != null && mMediaRouter.getSelectedRoute() != mMediaRouter.getDefaultRoute()) {
+            mRefreshItem.setVisible(true);
+            if (mSessionId == null) {
+                MenuItemCompat.setActionView(mRefreshItem, mRefreshProgress);
+            }
+        }
         return true;
     }
 
@@ -169,6 +186,9 @@ public class ConfigActivity extends ActionBarActivity {
         switch (item.getItemId()) {
             case R.id.action_play:
                 startActivity(new Intent(this, FeedActivity.class));
+                return true;
+            case R.id.action_refresh:
+                sendMessage(generateCastMessage());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -188,6 +208,13 @@ public class ConfigActivity extends ActionBarActivity {
             mCastDevice = CastDevice.getFromBundle(info.getExtras());
             Toast.makeText(ConfigActivity.this, String.format(getString(R.string.cast_connected_to), info.getName()), Toast.LENGTH_SHORT).show();
             launchReceiver();
+            if (mPlayItem != null) {
+                mPlayItem.setVisible(false); //TODO test
+            }
+            if (mRefreshItem!= null) {
+                mRefreshItem.setVisible(true); //TODO test
+                MenuItemCompat.setActionView(mRefreshItem, mRefreshProgress);
+            }
         }
 
         @Override
@@ -195,6 +222,12 @@ public class ConfigActivity extends ActionBarActivity {
             Log.d(TAG, "onRouteUnselected: info=" + info);
             teardown();
             Toast.makeText(ConfigActivity.this, R.string.cast_disconnected, Toast.LENGTH_SHORT).show();
+            if (mPlayItem != null) {
+                mPlayItem.setVisible(true); //TODO test
+            }
+            if (mRefreshItem!= null) {
+                mRefreshItem.setVisible(false); //TODO test
+            }
         }
     }
 
@@ -238,7 +271,6 @@ public class ConfigActivity extends ActionBarActivity {
                 // We got disconnected while this runnable was pending execution.
                 return;
             }
-
             try {
                 if (mWaitingForReconnect) {
                     mWaitingForReconnect = false;
@@ -252,8 +284,15 @@ public class ConfigActivity extends ActionBarActivity {
                             Log.e(TAG, "Exception while creating channel", e);
                         }
                     }
+                    if (mRefreshItem != null) {
+                        mRefreshItem.setVisible(true);
+                    }
                 } else { //Launch the receiver app
                     Cast.CastApi.launchApplication(mApiClient, RECEIVER_ID, false).setResultCallback(new ConnectionResultCallback());
+                    if (mRefreshItem != null) {
+                        mRefreshItem.setVisible(true);
+                        MenuItemCompat.setActionView(mRefreshItem, mRefreshProgress);
+                    }
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Failed to launch application", e);
@@ -262,8 +301,11 @@ public class ConfigActivity extends ActionBarActivity {
 
         @Override
         public void onConnectionSuspended(int cause) {
-            Log.d(TAG, "onConnectionSuspended");
+            Log.d(TAG, "onConnectionSuspended: " + cause);
             mWaitingForReconnect = true;
+            if (mRefreshItem != null) {
+                mRefreshItem.setVisible(false);
+            }
         }
     }
 
@@ -317,19 +359,27 @@ public class ConfigActivity extends ActionBarActivity {
     private void sendMessage(String message) {
         if (mApiClient != null && mCastChannel != null) {
             try {
+                if (mRefreshItem != null) {
+                    mRefreshItem.setVisible(true);
+                    MenuItemCompat.setActionView(mRefreshItem, mRefreshProgress);
+                }
                 Cast.CastApi.sendMessage(mApiClient, mCastChannel.getNamespace(), message).setResultCallback(new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status result) {
                         if (!result.isSuccess()) {
+                            if (mRefreshItem != null) {
+                                MenuItemCompat.setActionView(mRefreshItem, null);
+                            }
                             Log.e(TAG, "Sending message failed");
                         }
                     }
                 });
             } catch (Exception e) {
+                if (mRefreshItem != null) {
+                    MenuItemCompat.setActionView(mRefreshItem, null);
+                }
                 Log.e(TAG, "Exception while sending message", e);
             }
-        } else {
-            Toast.makeText(ConfigActivity.this, message, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -340,14 +390,14 @@ public class ConfigActivity extends ActionBarActivity {
         Log.d(TAG, "Teardown");
         if (mApiClient != null) {
             if (mApplicationStarted) {
-                if (mApiClient.isConnected() || mApiClient.isConnecting()) {
+                if (mApiClient.isConnected() /*|| mApiClient.isConnecting()*/) {
                     try {
                         Cast.CastApi.stopApplication(mApiClient, mSessionId);
                         if (mCastChannel != null) {
                             Cast.CastApi.removeMessageReceivedCallbacks(mApiClient, mCastChannel.getNamespace());
                             mCastChannel = null;
                         }
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         Log.e(TAG, "Exception while removing channel", e);
                     }
                     mApiClient.disconnect();
@@ -356,10 +406,12 @@ public class ConfigActivity extends ActionBarActivity {
             }
             mApiClient = null;
         }
+        if (mRefreshItem != null) {
+            mRefreshItem.setVisible(false);
+        }
         mCastDevice = null;
         mWaitingForReconnect = false;
         mSessionId = null;
-//        mMediaRouter.selectRoute(mMediaRouter.getDefaultRoute()); //TODO check
     }
 
     //----------------------------------------------------------------------------------------------
@@ -382,6 +434,9 @@ public class ConfigActivity extends ActionBarActivity {
         @Override
         public void onMessageReceived(CastDevice castDevice, String namespace, String message) {
             Log.d(TAG, "onMessageReceived: " + message);
+            if (mRefreshItem != null) {
+                MenuItemCompat.setActionView(mRefreshItem, null);
+            }
         }
 
     }
