@@ -154,7 +154,9 @@ public class ConfigActivity extends ActionBarActivity {
 
     @Override
     protected void onDestroy() {
-        teardown();
+        if (isFinishing()) {
+            teardown();
+        }
         super.onDestroy();
     }
 
@@ -509,5 +511,3 @@ public class ConfigActivity extends ActionBarActivity {
         }
     };
 }
-
-//TODO handle orientation changes
