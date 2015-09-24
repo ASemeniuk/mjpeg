@@ -40,6 +40,10 @@ import org.askerov.dynamicgrid.DynamicGridView;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public class ConfigActivity extends ActionBarActivity {
 
@@ -63,6 +67,8 @@ public class ConfigActivity extends ActionBarActivity {
     private String mSessionId;
     private MenuItem mRefreshItem;
     private View mRefreshProgress;
+    private ScheduledExecutorService mTaskScheduler;
+    private ScheduledFuture<?> mScheduleFuture;
 
     private final List<String> CAMERA_COUNT = Arrays.asList("1", "2", "4", "9");
 
@@ -133,6 +139,7 @@ public class ConfigActivity extends ActionBarActivity {
                 .addControlCategory(CastMediaControlIntent.categoryForCast(RECEIVER_ID))
                 .build();
         mMediaRouterCallback = new MjpegMediaRouterCallback();
+        mTaskScheduler = Executors.newSingleThreadScheduledExecutor();
 
         //--- Load data ---
         getSupportLoaderManager().initLoader(0, null, mLoaderCallbacks);
@@ -150,6 +157,12 @@ public class ConfigActivity extends ActionBarActivity {
             mMediaRouter.removeCallback(mMediaRouterCallback);
         }
         super.onPause();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        teardown();
     }
 
     @Override
@@ -320,6 +333,17 @@ public class ConfigActivity extends ActionBarActivity {
                 }
                 // Set the initial instructions on the receiver
                 sendMessage(generateCastMessage());
+
+                // Schedule message to be resent every 1 minute
+                if (mScheduleFuture != null && !mScheduleFuture.isDone()) {
+                    mScheduleFuture.cancel(false);
+                }
+                mScheduleFuture = mTaskScheduler.scheduleAtFixedRate(new Runnable() {
+                    public void run() {
+                        sendMessage(generateCastMessage());
+                    }
+                }, 60, 60, TimeUnit.SECONDS);
+
             } else {
                 Log.e(TAG, "Application could not launch: " + status.toString());
                 teardown();
@@ -374,6 +398,9 @@ public class ConfigActivity extends ActionBarActivity {
      */
     private void teardown() {
         Log.d(TAG, "Teardown");
+        if (mScheduleFuture != null && !mScheduleFuture.isDone()) {
+            mScheduleFuture.cancel(false);
+        }
         if (mApiClient != null) {
             if (mApplicationStarted) {
                 if (mApiClient.isConnected() /*|| mApiClient.isConnecting()*/) {
@@ -444,7 +471,7 @@ public class ConfigActivity extends ActionBarActivity {
         };
         Cursor cursor = getContentResolver().query(DataProvider.Camera.CONTENT_URI, projection, null, null, DataProvider.Camera.ORDER);
         try {
-            if (cursor.moveToFirst()) {
+            if (cursor != null && cursor.moveToFirst()) {
                 StringBuilder builder = new StringBuilder("{\"cameras\":[");
                 int i = 0;
                 do {
@@ -464,7 +491,9 @@ public class ConfigActivity extends ActionBarActivity {
                 return "";
             }
         } finally {
-            cursor.close();
+            if (cursor != null) {
+                cursor.close();
+            }
         }
 
     }
