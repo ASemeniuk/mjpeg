@@ -84,7 +84,7 @@
 			};
 
 			window.castReceiverManager.onSenderDisconnected = function(event) { // Handler for 'SenderDisconnected' event
-				if (window.castReceiverManager.getSenders().length == 0) {
+				if (event.reason == "disconnected_from_sender" && window.castReceiverManager.getSenders().length == 0) {
 					window.close();
 				}
 			};
