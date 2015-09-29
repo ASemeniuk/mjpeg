@@ -332,7 +332,13 @@ public class ConfigActivity extends ActionBarActivity {
                 }
                 mScheduleFuture = mTaskScheduler.scheduleAtFixedRate(new Runnable() {
                     public void run() {
-                        sendMessage(generateCastMessage());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                sendMessage(generateCastMessage());
+                                Toast.makeText(ConfigActivity.this, "Refresh", Toast.LENGTH_SHORT).show(); //TODO remove
+                            }
+                        });
                     }
                 }, 0, 60, TimeUnit.SECONDS);
 
