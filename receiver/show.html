@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<style type="text/css">
+		html,body {
+			background-color: #000;
+			margin:0;
+			padding:0;
+			height:100%;
+			width:100%;
+			border:none
+		}
+		table {
+			display: none;
+			background-color: #ddd;
+			margin:0;
+			padding:0;
+			height:100%;
+			width:100%;
+			border:none
+		}
+		td {
+			font-family: Verdana, Geneva, sans-serif;
+			font-size: 24px;
+			color: #aaa;
+			padding-left: 12px;
+			padding-top: 8px;
+			display: none;
+			max-width: 0;
+			vertical-align: top;
+			background-color: #000;
+			background-repeat: no-repeat;
+			background-position: center center;
+			background-size: cover;
+		}
+		div.splash {
+			width: 256px;
+			height: 256px;
+			position: absolute;
+			margin-top: -128px;
+			margin-left: -128px;
+			top: 50%;
+			left: 50%;
+		}
+	</style>
+	<title>Mjpeg Translator</title>
+</head>
+<body>
+	<div id="splash" class="splash">
+		<img width="256px" height="256px" src="logo.png">
+	</div>
+	<table id="grid" cellspacing="1px">
+		<tr>
+			<td id="camera1"></td>
+			<td id="camera2"></td>
+			<td id="camera3"></td>
+ 		</tr>
+		<tr id="row2">
+			<td id="camera4"></td>
+			<td id="camera5"></td>
+			<td id="camera6"></td>
+ 		</tr>
+		<tr id="row3">
+			<td id="camera7"></td>
+			<td id="camera8"></td>
+			<td id="camera9"></td>
+		</tr>
+	</table>
+	<script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
+	<script type="text/javascript">
+		var ids4 = ['camera1', 'camera2', 'camera4', 'camera5'];
+		var ids9 = ['camera1', 'camera2', 'camera3', 'camera4', 'camera5', 'camera6', 'camera7', 'camera8', 'camera9'];
+
+		window.onload = function() {
+			window.castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
+
+			window.castReceiverManager.onReady = function(event) { // Handler for the 'Ready' event
+				window.castReceiverManager.setApplicationState("Application status is ready...");
+			};
+			
+			window.castReceiverManager.onSenderConnected = function(event) { // Handler for 'SenderConnected' event
+				//console.log(window.castReceiverManager.getSender(event.data).userAgent);
+			};
+
+			window.castReceiverManager.onSenderDisconnected = function(event) { // Handler for 'SenderDisconnected' event
+				if (event.reason == "disconnected_from_sender" && window.castReceiverManager.getSenders().length == 0) {
+					window.close();
+				}
+			};
+
+			// Create a CastMessageBus to handle messages for a custom namespace
+			window.messageBus = window.castReceiverManager.getCastMessageBus('urn:x-cast:org.alexsem.mjpeg.receiver');
+
+			window.messageBus.onMessage = function(event) { // handler for the CastMessageBus message event
+				initialize(event.data);
+				// Inform all senders on the CastMessageBus of the incoming message event
+				window.messageBus.send(event.senderId, event.data);
+			}
+
+			// Initialize the CastReceiverManager with an application status message
+			window.castReceiverManager.start({statusText: "Application is starting", maxInactivity: 90});
+
+		};
+
+		function initialize(text) {
+			if (text === '') { //No data passed
+				return;
+			}
+			document.getElementById('splash').style.display = 'none';
+			document.getElementById('grid').style.display = 'table';
+			for (var id of ids9) { 
+				document.getElementById(id).style.display = 'none';
+			}
+			obj = JSON.parse(text);
+			var count = obj.cameras.length; 
+			var ids = count == 9 ? ids9 : ids4;
+			document.getElementById('row2').style.display = count > 2 ? 'table-row' : 'none';
+			document.getElementById('row3').style.display = count > 4 ? 'table-row' : 'none';
+			for (var camera of obj.cameras) {
+				var td = document.getElementById(ids[camera.order - 1]);
+				td.style.display = 'table-cell';
+				if (camera.visible) {
+					td.style.backgroundImage = 'url("' + camera.url +'?random=' + Math.floor((Math.random() * 1000)) + '")';
+					td.innerHTML = camera.name;
+				} else {
+					td.style.backgroundImage = 'none';
+					td.innerHTML = '';
+				}
+			}
+		};
+	</script>
+</body>
+</html>

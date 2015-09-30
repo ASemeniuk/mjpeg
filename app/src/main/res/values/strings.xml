@@ -2,8 +2,13 @@
     <string name="app_name">Mjpeg Translator</string>
 
     <string name="action_play">Start playback</string>
+    <string name="action_cast">Cast to device</string>
+    <string name="action_refresh">Refresh</string>
 
     <string name="config_cameras">Cameras:</string>
+
+    <string name="cast_connected_to" formatted="false">Connected to %s</string>
+    <string name="cast_disconnected">Disconnected</string>
 
     <string name="camera_enabled">Enabled:</string>
     <string name="camera_name">Name:</string>

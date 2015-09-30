@@ -12,8 +12,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import org.alexsem.mjpeg.database.DataProvider;
-
-import java.util.concurrent.atomic.AtomicInteger;
+import org.alexsem.mjpeg.util.Utils;
 
 public class FeedActivity extends ActionBarActivity {
 
@@ -67,12 +66,12 @@ public class FeedActivity extends ActionBarActivity {
 						row.setLayoutParams(params);
 					}
 					FrameLayout cell = new FrameLayout(this);
-					cell.setId(generateViewId());
+					cell.setId(Utils.generateViewId());
 					cell.setLayoutParams(params);
 					row.addView(cell);
 					if (cursor.moveToNext() && cursor.getInt(cursor.getColumnIndex(DataProvider.Camera.ENABLED)) > 0) {
 						String name = cursor.getString(cursor.getColumnIndex(DataProvider.Camera.NAME));
-						String url = String.format("http://%s:8080/videofeed", cursor.getString(cursor.getColumnIndex(DataProvider.Camera.HOST)));
+						String url = Utils.generateMpegUrl(cursor.getString(cursor.getColumnIndex(DataProvider.Camera.HOST)));
 						int mode = cursor.getInt(cursor.getColumnIndex(DataProvider.Camera.MODE));
 						ft.add(cell.getId(), MjpegFragment.newInstance(name, url, mode));
 					} else {
@@ -84,22 +83,6 @@ public class FeedActivity extends ActionBarActivity {
 			}
 		} finally {
 			cursor.close();
-		}
-	}
-
-	//----------------------------------------------------------------------------------------------
-
-	private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
-
-	public static int generateViewId() {
-		for (;;) {
-			final int result = sNextGeneratedId.get();
-			// aapt-generated IDs have the high byte nonzero; clamp to the range under that.
-			int newValue = result + 1;
-			if (newValue > 0x00FFFFFF) newValue = 1; // Roll over to 1, not 0.
-			if (sNextGeneratedId.compareAndSet(result, newValue)) {
-				return result;
-			}
 		}
 	}
 
