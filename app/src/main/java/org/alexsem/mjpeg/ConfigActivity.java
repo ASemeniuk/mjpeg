@@ -39,7 +39,6 @@ import org.askerov.dynamicgrid.DynamicGridView;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -48,7 +47,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ConfigActivity extends ActionBarActivity {
 
-    private static final String TAG = ConfigActivity.class.getSimpleName(); //TODO remove
+    private static final String TAG = ConfigActivity.class.getSimpleName();
     private static final String RECEIVER_ID = "C7EC4FCA";
 
     private DynamicGridView mGrid;
@@ -336,7 +335,7 @@ public class ConfigActivity extends ActionBarActivity {
                             @Override
                             public void run() {
                                 sendMessage(generateCastMessage());
-                                Toast.makeText(ConfigActivity.this, "Refresh", Toast.LENGTH_SHORT).show(); //TODO remove
+                                Toast.makeText(ConfigActivity.this, "Refresh", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
